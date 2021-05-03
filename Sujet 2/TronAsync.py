@@ -2,11 +2,12 @@ import tkinter as tk
 import random
 import numpy as np
 import copy 
+import time
 
 #################################################################################
 #
 #   Données de partie
-Debug = False
+NbSimulation = 10000
 Data = [   [1,1,1,1,1,1,1,1,1,1,1,1,1],
            [1,0,0,0,0,0,0,0,0,0,0,0,1],
            [1,0,0,0,0,0,0,0,0,0,0,0,1],
@@ -138,7 +139,7 @@ def MovePlayer(Game):
     return random.choice(executableMove)
 
 def SimulateGame(Game):
-    
+   
     while True :
         x,y = Game.PlayerX, Game.PlayerY
 
@@ -151,16 +152,14 @@ def SimulateGame(Game):
             Game.PlayerX = x  # valide le déplacement
             Game.PlayerY = y  # valide le déplacement
             Game.Score += 1
+
     return Game.Score
      
-def MonteCarlo(Game, nbGame):
-    
-
+def MonteCarlo(Game):
     Total = 0
-    for i in range(nbGame):
+    for i in range(NbSimulation):
         Game2 = Game.copy()
         Total += SimulateGame(Game2)
-    if Debug : print('MonteCarlo', Total/nbGame)
     return Total
 
 def MovePlayerWithIA(Game):
@@ -169,10 +168,11 @@ def MovePlayerWithIA(Game):
     maxi = 0
     if(len(executableMove)==0):
         return None, None
+
     for x,y in executableMove:
-        Game.PlayerX = x  # valide le déplacement
+        Game.PlayerX = x  
         Game.PlayerY = y
-        total = MonteCarlo(Game,1000)
+        total = MonteCarlo(Game)
         if(total>maxi):
             result = (x,y)
             maxi = total
@@ -201,9 +201,9 @@ CurrentGame = GameInit.copy()
  
 
 def Partie():
-
+    Tstart = time.time()
     PartieTermine = Play(CurrentGame)
-    
+    print(time.time() -  Tstart)
     if not PartieTermine :
         Affiche(CurrentGame)
         # rappelle la fonction Partie() dans 30ms
