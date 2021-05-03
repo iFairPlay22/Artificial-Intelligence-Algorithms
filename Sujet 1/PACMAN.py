@@ -2,6 +2,7 @@ import random
 import tkinter as tk
 from tkinter import font  as tkfont
 import numpy as np
+import math
  
 
 #################################################################
@@ -24,13 +25,12 @@ TBL = [ [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
         [1,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,1],
         [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1] ]
         
-        
 TBL = np.array(TBL,dtype=np.int32)
 TBL = TBL.transpose()  ## ainsi, on peut écrire TBL[x][y]
 
-
+SCORE = 0
         
-ZOOM = 40   # taille d'une case en pixels
+ZOOM   = 40 # taille d'une case en pixels
 EPAISS = 8  # epaisseur des murs bleus en pixels
 HAUTEUR = TBL.shape [1]      
 LARGEUR = TBL.shape [0]
@@ -74,7 +74,7 @@ def AfficherPage(id):
     
 def WindowAnim():
     MainLoop()
-    Window.after(500,WindowAnim)
+    Window.after(250,WindowAnim)
 
 Window.after(100,WindowAnim)
 
@@ -109,11 +109,10 @@ PacManPos = [5,5]
 
 Ghosts  = []
 Ghosts.append(  [LARGEUR//2, HAUTEUR // 2 ,  "pink"  ]   )
-Ghosts.append(  [LARGEUR//2, HAUTEUR // 2 ,  "orange"] )
+Ghosts.append(  [LARGEUR//2, HAUTEUR // 2 ,  "orange"]   )
 Ghosts.append(  [LARGEUR//2, HAUTEUR // 2 ,  "cyan"  ]   )
-Ghosts.append(  [LARGEUR//2, HAUTEUR // 2 ,  "red"   ]     )         
+Ghosts.append(  [LARGEUR//2, HAUTEUR // 2 ,  "red"   ]   )         
 
- 
  
 #################################################################
 ##
@@ -137,10 +136,18 @@ def Affiche():
       canvas.create_oval(x-r,y-r,x+r,y+r, fill=coul, width  = 0)
    
    canvas.delete("all")
+
+
+   # chiffres
+   PACMAN_MOVES = PacmanMovesTab()
+   for x in range(LARGEUR):
+      for y in range(HAUTEUR):
+         xx = To(x) 
+         yy = To(y)
+         canvas.create_text(xx,yy, text = PACMAN_MOVES[x][y], fill ="white", font=("Purisa", 8))
       
       
    # murs
-   
    for x in range(LARGEUR-1):
       for y in range(HAUTEUR):
          if ( TBL[x][y] == 1 and TBL[x+1][y] == 1 ):
@@ -201,22 +208,57 @@ def Affiche():
      
    # texte blabla
    
-   canvas.create_text(screeenWidth // 2, screenHeight- 50 , text = "Hello", fill ="yellow", font = PoliceTexte)
+   canvas.create_text(screeenWidth // 2, screenHeight- 50 , text = "Score " + str(SCORE), fill ="yellow", font = PoliceTexte)
  
             
 #################################################################
 ##
 ##  IA RANDOM
 
+def PacmanMovesTab():
 
-      
+   def getVal(x, y): 
+      if (GUM[x][y] == 1)   : return 0
+      elif (TBL[x][y] == 0) : return 100
+      else                  : return math.inf
+
+   moves = np.array([ [ getVal(y, x) for y in range(LARGEUR) ] for x in range(HAUTEUR) ])
+   moves = moves.transpose()   ## ainsi, on peut écrire MOVES[x][y]
+
+   auMoinsUneModif  = True
+   
+   while auMoinsUneModif:
+      auMoinsUneModif = False
+
+      for x in range(LARGEUR):
+         for y in range(HAUTEUR):
+
+            if (moves[x][y] == math.inf):  continue
+
+            valeursEnvironnantes = []
+
+            if (x+1 < LARGEUR) : valeursEnvironnantes.append(moves[x+1][y  ])
+            if (0 <= x-1     ) : valeursEnvironnantes.append(moves[x-1][y  ])
+            if (y+1 < HAUTEUR) : valeursEnvironnantes.append(moves[x  ][y+1])
+            if (0 <= y-1     ) : valeursEnvironnantes.append(moves[x  ][y-1])
+
+            if len(valeursEnvironnantes) != 0:
+               nouvelleValeur = min(valeursEnvironnantes) + 1
+               if (nouvelleValeur < moves[x][y]):
+                  moves[x][y] = nouvelleValeur
+                  auMoinsUneModif = True
+   
+   return moves
+
 def PacManPossibleMove():
    L = []
    x,y = PacManPos
+
    if ( TBL[x  ][y-1] == 0 ): L.append((0,-1))
    if ( TBL[x  ][y+1] == 0 ): L.append((0, 1))
    if ( TBL[x+1][y  ] == 0 ): L.append(( 1,0))
    if ( TBL[x-1][y  ] == 0 ): L.append((-1,0))
+            
    return L
    
 def GhostsPossibleMove(x,y):
@@ -227,15 +269,30 @@ def GhostsPossibleMove(x,y):
    if ( TBL[x-1][y  ] == 2 ): L.append((-1,0))
    return L
    
+def debug(tab):
+   x, y = PacManPos
+   print(np.array(tab).transpose())
+   print(str(x) + " " + str(y))
+   print()
+
 def IA():
-   global PacManPos, Ghosts
-   #deplacement Pacman
-   L = PacManPossibleMove()
-   choix = random.randrange(len(L))
-   PacManPos[0] += L[choix][0]
-   PacManPos[1] += L[choix][1]
+   global PacManPos, Ghosts, SCORE
+
+   #Pacman mange 
+   x, y = PacManPos
+   if (GUM[x][y] == 1):
+      GUM[x][y] = 0
+      SCORE += 1
+
+   #Deplacement Pacman
+   PACMAN_MOVES = PacmanMovesTab()
+   pacmanPossibleMoveDirections = PacManPossibleMove()
+   pacmanPossibleMovesCoords = { PACMAN_MOVES[PacManPos[0] + pacmanNextX][PacManPos[1] + pacmanNextY] : (pacmanNextX, pacmanNextY) for pacmanNextX, pacmanNextY in pacmanPossibleMoveDirections }
+   pacmanMoveCoords = pacmanPossibleMovesCoords[min(pacmanPossibleMovesCoords.keys())]
+   PacManPos[0] += pacmanMoveCoords[0]
+   PacManPos[1] += pacmanMoveCoords[1]
    
-   #deplacement Fantome
+   #Deplacement Fantome
    for F in Ghosts:
       L = GhostsPossibleMove(F[0],F[1])
       choix = random.randrange(len(L))
