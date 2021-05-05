@@ -120,7 +120,6 @@ def Simulate(Game):
         
 
         ### on gère les déplacement et le code
-
         # on arrete le traitement si, on est statique sur l'ensemble des parties
         if(nb == np.count_nonzero(Position == 0)): continuer = False
 

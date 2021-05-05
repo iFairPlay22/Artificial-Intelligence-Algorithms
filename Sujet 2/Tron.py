@@ -119,79 +119,115 @@ def AfficheScore(Game):
 # gestion du joueur IA
 
 # VOTRE CODE ICI 
+
+# renvoie les directions réalisables
 def GetAllExectuableMove(Game):
+
+    # ensemble des vecteurs directions 
     possibleMove = [(0,+1),(0,-1),(+1,0),(-1,0)]
+
+    # liste des déplacements réalisables
     executableMove = []
+
     for tup in possibleMove :
         x,y = Game.PlayerX + tup[0], Game.PlayerY + tup[1]
-        v = Game.Grille[x,y]
-        if v == 0 :
-            executableMove.append((x,y))
+        
+        # si on peut se déplacer, on l'ajoute 
+        if Game.Grille[x,y] == 0 : executableMove.append((x,y))
     
     return executableMove
 
+# renvoie une direction réalisable aléatoirement
 def MovePlayer(Game): 
     executableMove = GetAllExectuableMove(Game)
-    if(len(executableMove)<1):
-        return None, None
+    if(len(executableMove)<1): return None, None
     return random.choice(executableMove)
 
+# simiule une partie aléatoire
 def SimulateGame(Game):
     
     while True :
+
+        # positions du joueur en cours
         x,y = Game.PlayerX, Game.PlayerY
 
-        Game.Grille[x,y] = 2  # laisse la trace de la moto
+        # on laisse la trace de la moto
+        Game.Grille[x,y] = 2  
 
+        # prochaine position du joueur
         x,y = MovePlayer(Game)
-        if x == None or y == None :
-            break
-        else :
-            Game.PlayerX = x  # valide le déplacement
-            Game.PlayerY = y  # valide le déplacement
-            Game.Score += 1
+        if x == None or y == None : break
+        
+        # on déplace le joueur
+        Game.PlayerX = x 
+        Game.PlayerY = y 
 
+        # on incrémente le score
+        Game.Score += 1
+
+    # retourne le scode du jeu  
     return Game.Score
-     
+
+# réalise nbGame fois le jeu de manière aléatoire
 def MonteCarlo(Game, nbGame):
     Total = 0
-    
+
     for i in range(nbGame):
+        # on fait une copie du jeu
         Game2 = Game.copy()
+
+        # on incrémente les scores réalisés
         Total += SimulateGame(Game2)
         
     return Total
 
+# deplace le joueur de manière intelligente
 def MovePlayerWithIA(Game):
+
+    # recupere les directions réalisables
     executableMove = GetAllExectuableMove(Game)
     result = (None, None)
     maxi = 0
-    if(len(executableMove)==0):
-        return result
+
+    # si on a pas de résultats, on retourne (None, None)
+    if(len(executableMove) == 0): return result
+
     for x,y in executableMove:
-        Game.PlayerX = x  # valide le déplacement
+
+        # on déplace le joueur
+        Game.PlayerX = x  
         Game.PlayerY = y
-        total = MonteCarlo(Game,10000)
-        if(total>maxi):
+
+        # on recupere le score des simulations 
+        total = MonteCarlo(Game, 10000)
+
+        # on recupere les informations pour le meilleur score
+        if(maxi < total):
             result = (x,y)
             maxi = total
+
     return result
 
 def Play(Game):   
-    
-    x,y = Game.PlayerX, Game.PlayerY
 
-    Game.Grille[x,y] = 2  # laisse la trace de la moto
+    # on laisse la trace de la moto
+    Game.Grille[Game.PlayerX, Game.PlayerY] = 2  
 
+    # on récupère la prochaine position la plus pertinente 
     x,y = MovePlayerWithIA(Game)
-    if x == None or y == None :
-        # collision détectée
-        return True # partie terminée
-    else :
-       Game.PlayerX = x  # valide le déplacement
-       Game.PlayerY = y  # valide le déplacement
-       Game.Score += 1
-       return False   # la partie continue
+
+    # si une collision est détectée, la partie est terminée
+    if x == None or y == None : return True 
+    
+    # on déplace le joueur
+    Game.PlayerX = x 
+    Game.PlayerY = y  
+
+    # on incrémente le score
+    Game.Score += 1
+
+    # la partie continue
+    return False   
      
 
 ################################################################################
