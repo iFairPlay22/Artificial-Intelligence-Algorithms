@@ -138,6 +138,14 @@ Ghosts.append(  [LARGEUR//2, HAUTEUR // 2 ,  "pink"  , (0, -1) ]  )
 Ghosts.append(  [LARGEUR//2, HAUTEUR // 2 ,  "orange", (0, -1) ]  )
 Ghosts.append(  [LARGEUR//2, HAUTEUR // 2 ,  "cyan"  , (0, -1) ]  )
 Ghosts.append(  [LARGEUR//2, HAUTEUR // 2 ,  "red"   , (0, -1) ]  )     
+Ghosts.append(  [LARGEUR//2, HAUTEUR // 2 ,  "pink"  , (0, -1) ]  )
+Ghosts.append(  [LARGEUR//2, HAUTEUR // 2 ,  "orange", (0, -1) ]  )
+Ghosts.append(  [LARGEUR//2, HAUTEUR // 2 ,  "cyan"  , (0, -1) ]  )
+Ghosts.append(  [LARGEUR//2, HAUTEUR // 2 ,  "red"   , (0, -1) ]  )   
+Ghosts.append(  [LARGEUR//2, HAUTEUR // 2 ,  "pink"  , (0, -1) ]  )
+Ghosts.append(  [LARGEUR//2, HAUTEUR // 2 ,  "orange", (0, -1) ]  )
+Ghosts.append(  [LARGEUR//2, HAUTEUR // 2 ,  "cyan"  , (0, -1) ]  )
+Ghosts.append(  [LARGEUR//2, HAUTEUR // 2 ,  "red"   , (0, -1) ]  )   
 
  
 #################################################################
@@ -405,16 +413,13 @@ def IA():
    # les fantomes attaquent Pacman 
    pacmanX, pacmanY = PacManPos
    for ghost in Ghosts:
-      if (ghost[0] == pacmanX and ghost[1] == pacmanY):
+      ghostX, ghostY = ghost[0], ghost[1]
+
+      # si il y a une collision
+      if ((ghostX - pacmanX, ghostY - pacmanY) in [(0,1), (0,-1), (1,0), (-1,0)]):
+
          # on baisse la vie de Pacman
          LIFE = max(0, LIFE - 1)
-
-      # # si un fantome est sur un intervalle d'une case pres de Pacman
-      # for dx, dy in ((-1, 0), (1, 0), (0, -1), (0, 1)):
-      #    if (ghost[0] == pacmanX + dx and ghost[1] == pacmanY + dy):
-      #       # on baisse la vie de Pacman
-      #       LIFE = max(0, LIFE - 1)
- 
 
 #################################################################
 ##
