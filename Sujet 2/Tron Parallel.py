@@ -2,6 +2,7 @@ import tkinter as tk
 import random
 import time
 import numpy as np
+import copy 
 
 
 Data = [   [1,1,1,1,1,1,1,1,1,1,1,1,1],
@@ -64,7 +65,6 @@ def AffGrilles(G,X,Y):
 
 # Liste des directions :
 # 0 : sur place   1: à gauche  2 : en haut   3: à droite    4: en bas
-
 dx = np.array([0, -1, 0,  1,  0],dtype=np.int8)
 dy = np.array([0,  0, 1,  0, -1],dtype=np.int8)
 
@@ -73,21 +73,6 @@ ds = np.array([0,  1,  1,  1,  1],dtype=np.int8)
 
 # nb de parties
 nb = 5 
-
-# mode débug
-Debug = False
-
-def push_zeros_back(array):
-    valid_mask = array != 0
-    flipped_mask = valid_mask.sum(1, keepdims=1) > np.arange(array.shape[1] - 1, -1, -1)
-    print( np.arange(array.shape[1] -1))
-    #print(flipped_mask)
-    flipped_mask = flipped_mask[:, ::-1]
-    #print(flipped_mask)
-    array[flipped_mask] = array[valid_mask]
-    #print(array)
-    array[~flipped_mask] = 0
-    return array
 
 def Simulate(Game):
 
@@ -98,56 +83,56 @@ def Simulate(Game):
     S      = np.tile(Game.Score,nb)             # score   (s)   pour chaque partie
     I      = np.arange(nb)                      # 0,1,2,3,...,nb-1
 
-    boucle = True
-    if Debug : AffGrilles(G,X,Y)
-
     # VOTRE CODE ICI
+    continuer = True
 
-    while(boucle) :
-        if Debug :print("X : ",X)
-        if Debug :print("Y : ",Y)
-        if Debug :print("S : ",S)
+    while(continuer) :
 
-        # marque le passage de la moto
+        # pour chaque partie, on fait une affectation à 2 le passage de la moto
         G[I, X, Y] = 2
 
-        # direction aléatoire
-        R = np.random.randint(4,size=nb)
 
-        # tous les déplacements possibles
-        LPossibles = np.zeros((nb, 4),dtype=np.int32)
-        for i in range(4):
+        ### pour chaque partie, on gère tous les index de déplacements possibles
+        # pour chaque partie, on associe une liste de taille 4 initialisée à 0 
+        LPossibles = np.zeros((nb, 4),dtype=np.int8)
+
+        # pour chaque partie, on associe la liste de taille 4 à i si le joueur peut bouger dans cette direction, 0 sinon
+        for i in range(4): 
             LPossibles[I,i] = np.where(G[I, X+dx[i+1], Y+dy[i+1]] == 0,i+1,0)
 
-        LPossibles.sort(axis=1)#sort
-        LPossibles = np.fliplr(LPossibles)#flip the sort by descending order
+        # pour chaque partie, on trie la liste des directions de manière décroissante
+        LPossibles.sort(axis=1)
+        LPossibles = np.fliplr(LPossibles)
 
-        Indices = np.zeros(nb,dtype=np.int8)
+
+        ### pour chaque partie, on compte le nombre de déplacements possibles
+        # pour chaque partie, on compte le nombre d'éléments de LPossibles non nuls
         Indices = np.count_nonzero(LPossibles, axis=1)
-      
+        
+        # pour chaque partie, on remplace les index de 0 par 1 pour pas planter sur le modulo
         Indices[Indices == 0] = 1
-        Position = LPossibles[I,R%Indices[I]]
-        if Debug :print("Position : ",Position)
+
+        # pour chaque partie, on génère un index de direction aléatoire
+        R = np.random.randint(12,size=nb,dtype=np.int8)
+
+        # pour chaque partie, on réucupère un vecteur position
+        Position = LPossibles[I, R % Indices[I]]
+        
+
+        ### on gère les déplacement et le code
+
+        # on arrete le traitement si, on est statique sur l'ensemble des parties
+        if(nb == np.count_nonzero(Position == 0)): continuer = False
+
+        # pour chaque partie, on incrémente le score
         S[I] += ds[Position]
-        nb0 =  np.count_nonzero(Position == 0 )
-        if(nb0==nb):
-            boucle = False
-        DX = dx[Position]
-        DY = dy[Position]
-        if Debug : print("DX : ", DX)
-        if Debug : print("DY : ", DY)
-        X += DX
-        Y += DY
 
+        # pour chaque partie, on déplace le joueur
+        X += dx[Position]
+        Y += dy[Position]
 
-        #debug
-        if Debug : AffGrilles(G,X,Y)
-        #if Debug : time.sleep(2)
-    AffGrilles(G,X,Y)
-    print(S)
-    print("Scores : ",np.mean(S))
-
-
+    # on affiche la moyenne des scores
+    print("Moyennes des scores : ", np.mean(S))
 
 Simulate(GameInit)
 
