@@ -72,8 +72,19 @@ dy = np.array([0,  0, 1,  0, -1],dtype=np.int8)
 ds = np.array([0,  1,  1,  1,  1],dtype=np.int8)
 
 Debug = False
-nb = 5 # nb de parties
+nb = 15 # nb de parties
 
+def push_zeros_back(array):
+    valid_mask = array != 0
+    flipped_mask = valid_mask.sum(1, keepdims=1) > np.arange(array.shape[1] - 1, -1, -1)
+    print( np.arange(array.shape[1] -1))
+    #print(flipped_mask)
+    flipped_mask = flipped_mask[:, ::-1]
+    #print(flipped_mask)
+    array[flipped_mask] = array[valid_mask]
+    #print(array)
+    array[~flipped_mask] = 0
+    return array
 
 def Simulate(Game):
 
@@ -99,20 +110,22 @@ def Simulate(Game):
         R = np.random.randint(4,size=nb)
 
         #DEPLACEMENT
-        LPossibles = np.zeros((nb),dtype=np.int32)
-        LPossibles[I,0] = G[I, X+dx[1], Y+dy[1]] == 0
+        LPossibles = np.zeros((nb,4),dtype=np.int8)
+        LPossibles[I,0] = np.where(G[I, X+dx[1], Y+dy[1]] == 0,1,0)
         LPossibles[I,1] = np.where(G[I, X+dx[2], Y+dy[2]]==0,2,0)
         LPossibles[I,2] = np.where(G[I, X+dx[3], Y+dy[3]]==0,3,0)        
         LPossibles[I,3] = np.where(G[I, X+dx[4], Y+dy[4]]==0,4,0)
+        LPossibles.sort(axis=1)#sort
+        LPossibles = np.fliplr(LPossibles)#flip the sort by descending order
 
-        Indices = np.zeros(nb,dtype=np.int32)
-        Indices = np.count_nonzero(LPossibles!= 0 , axis=1)
+        Indices = np.zeros(nb,dtype=np.int8)
+        Indices = np.count_nonzero(LPossibles, axis=1)
       
         Indices[Indices == 0]=1
         Position = LPossibles[I,R%Indices[I]]
+        if Debug :print("Position : ",Position)
         S[I] += Position[I]!=0
         nb0 =  np.count_nonzero(Position == 0 )
-        print(nb0)
         if(nb0==nb):
             boucle = False
         DX = dx[Position]
@@ -125,7 +138,8 @@ def Simulate(Game):
 
         #debug
         if Debug : AffGrilles(G,X,Y)
-        if Debug : time.sleep(2)
+        #if Debug : time.sleep(2)
+    AffGrilles(G,X,Y)
     print(S)
     print("Scores : ",np.mean(S))
 
