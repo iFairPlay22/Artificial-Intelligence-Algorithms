@@ -71,18 +71,22 @@ dy = np.array([0,  0, 1,  0, -1],dtype=np.int8)
 # scores associés à chaque déplacement
 ds = np.array([0,  1,  1,  1,  1],dtype=np.int8)
 
+# nb de parties
+nb = 5 
+
+# mode débug
 Debug = False
-nb = 5 # nb de parties
 
 
 def Simulate(Game):
 
-    # on copie les datas de départ pour créer plusieurs parties en //
-    G      = np.tile(Game.Grille,(nb,1,1))
-    X      = np.tile(Game.PlayerX,nb)
-    Y      = np.tile(Game.PlayerY,nb)
-    S      = np.tile(Game.Score,nb)
-    I      = np.arange(nb)  # 0,1,2,3,4,5...
+    # on copie les datas de départ pour créer plusieurs parties
+    G      = np.tile(Game.Grille,(nb,1,1))      # grille  (x,y) pour chaque partie
+    X      = np.tile(Game.PlayerX,nb)           # playerX (x)   pour chaque partie
+    Y      = np.tile(Game.PlayerY,nb)           # playerY (y)   pour chaque partie
+    S      = np.tile(Game.Score,nb)             # score   (s)   pour chaque partie
+    I      = np.arange(nb)                      # 0,1,2,3,...,nb-1
+
     boucle = True
     if Debug : AffGrilles(G,X,Y)
 
@@ -95,20 +99,19 @@ def Simulate(Game):
 
         # marque le passage de la moto
         G[I, X, Y] = 2
-        # Direction : 2 = vers le haut
+
+        # direction aléatoire
         R = np.random.randint(4,size=nb)
 
-        #DEPLACEMENT
-        LPossibles = np.zeros((nb),dtype=np.int32)
-        LPossibles[I,0] = G[I, X+dx[1], Y+dy[1]] == 0
-        LPossibles[I,1] = np.where(G[I, X+dx[2], Y+dy[2]]==0,2,0)
-        LPossibles[I,2] = np.where(G[I, X+dx[3], Y+dy[3]]==0,3,0)        
-        LPossibles[I,3] = np.where(G[I, X+dx[4], Y+dy[4]]==0,4,0)
+        # tous les déplacements possibles
+        LPossibles = np.zeros((nb, 4),dtype=np.int32)
+        for i in range(4):
+            LPossibles[I,i] = np.where(G[I, X+dx[i+1], Y+dy[i+1]] == 0,i+1,0)
 
         Indices = np.zeros(nb,dtype=np.int32)
-        Indices = np.count_nonzero(LPossibles!= 0 , axis=1)
+        Indices = np.count_nonzero(LPossibles != 0, axis=1)
       
-        Indices[Indices == 0]=1
+        Indices[Indices == 0] = 1
         Position = LPossibles[I,R%Indices[I]]
         S[I] += Position[I]!=0
         nb0 =  np.count_nonzero(Position == 0 )

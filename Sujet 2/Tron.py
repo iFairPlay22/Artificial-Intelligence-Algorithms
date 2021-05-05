@@ -155,6 +155,7 @@ def SimulateGame(Game):
      
 def MonteCarlo(Game, nbGame):
     Total = 0
+    
     for i in range(nbGame):
         Game2 = Game.copy()
         Total += SimulateGame(Game2)
