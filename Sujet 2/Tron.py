@@ -6,7 +6,6 @@ import copy
 #################################################################################
 #
 #   Données de partie
-Debug = False
 Data = [   [1,1,1,1,1,1,1,1,1,1,1,1,1],
            [1,0,0,0,0,0,0,0,0,0,0,0,1],
            [1,0,0,0,0,0,0,0,0,0,0,0,1],
@@ -124,7 +123,7 @@ def GetAllExectuableMove(Game):
     possibleMove = [(0,+1),(0,-1),(+1,0),(-1,0)]
     executableMove = []
     for tup in possibleMove :
-        x,y = Game.PlayerX + tup[0],Game.PlayerY + tup[1]
+        x,y = Game.PlayerX + tup[0], Game.PlayerY + tup[1]
         v = Game.Grille[x,y]
         if v == 0 :
             executableMove.append((x,y))
@@ -151,16 +150,15 @@ def SimulateGame(Game):
             Game.PlayerX = x  # valide le déplacement
             Game.PlayerY = y  # valide le déplacement
             Game.Score += 1
+
     return Game.Score
      
 def MonteCarlo(Game, nbGame):
-    
-
     Total = 0
     for i in range(nbGame):
         Game2 = Game.copy()
         Total += SimulateGame(Game2)
-    if Debug : print('MonteCarlo', Total/nbGame)
+        
     return Total
 
 def MovePlayerWithIA(Game):
@@ -168,7 +166,7 @@ def MovePlayerWithIA(Game):
     result = (None, None)
     maxi = 0
     if(len(executableMove)==0):
-        return None, None
+        return result
     for x,y in executableMove:
         Game.PlayerX = x  # valide le déplacement
         Game.PlayerY = y

@@ -71,7 +71,7 @@ dy = np.array([0,  0, 1,  0, -1],dtype=np.int8)
 # scores associés à chaque déplacement
 ds = np.array([0,  1,  1,  1,  1],dtype=np.int8)
 
-Debug = True
+Debug = False
 nb = 5 # nb de parties
 
 
@@ -95,20 +95,22 @@ def Simulate(Game):
 
         # marque le passage de la moto
         G[I, X, Y] = 2
-
-
         # Direction : 2 = vers le haut
         R = np.random.randint(4,size=nb)
 
-
         #DEPLACEMENT
         LPossibles = np.zeros((nb,4),dtype=np.int32)
-        LPossibles = np.insert(LPossibles, 5, axis=1)
-        Indices = np.zeros(nb,dtype=np.int32)
-        
+        LPossibles[I,0] = G[I, X+dx[1], Y+dy[1]] == 0
+        LPossibles[I,1] = np.where(G[I, X+dx[2], Y+dy[2]],2,0)
+        LPossibles[I,2] = np.where(G[I, X+dx[3], Y+dy[3]],3,0)        
+        LPossibles[I,3] = np.where(G[I, X+dx[4], Y+dy[4]],4,0)
         print(LPossibles)
-        Indices = LPossibles[I]
+
+        Indices = np.zeros(nb,dtype=np.int32)
+        Indices = np.count_nonzero(LPossibles[I] != 0 , axis=1)
         Indices[Indices == 0]=1
+
+
         DX = dx[R]
         DY = dy[R]
         if Debug : print("DX : ", DX)
