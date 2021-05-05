@@ -77,6 +77,17 @@ nb = 5
 # mode débug
 Debug = False
 
+def push_zeros_back(array):
+    valid_mask = array != 0
+    flipped_mask = valid_mask.sum(1, keepdims=1) > np.arange(array.shape[1] - 1, -1, -1)
+    print( np.arange(array.shape[1] -1))
+    #print(flipped_mask)
+    flipped_mask = flipped_mask[:, ::-1]
+    #print(flipped_mask)
+    array[flipped_mask] = array[valid_mask]
+    #print(array)
+    array[~flipped_mask] = 0
+    return array
 
 def Simulate(Game):
 
@@ -108,14 +119,17 @@ def Simulate(Game):
         for i in range(4):
             LPossibles[I,i] = np.where(G[I, X+dx[i+1], Y+dy[i+1]] == 0,i+1,0)
 
-        Indices = np.zeros(nb,dtype=np.int32)
-        Indices = np.count_nonzero(LPossibles != 0, axis=1)
+        LPossibles.sort(axis=1)#sort
+        LPossibles = np.fliplr(LPossibles)#flip the sort by descending order
+
+        Indices = np.zeros(nb,dtype=np.int8)
+        Indices = np.count_nonzero(LPossibles, axis=1)
       
         Indices[Indices == 0] = 1
         Position = LPossibles[I,R%Indices[I]]
+        if Debug :print("Position : ",Position)
         S[I] += Position[I]!=0
         nb0 =  np.count_nonzero(Position == 0 )
-        print(nb0)
         if(nb0==nb):
             boucle = False
         DX = dx[Position]
@@ -128,7 +142,8 @@ def Simulate(Game):
 
         #debug
         if Debug : AffGrilles(G,X,Y)
-        if Debug : time.sleep(2)
+        #if Debug : time.sleep(2)
+    AffGrilles(G,X,Y)
     print(S)
     print("Scores : ",np.mean(S))
 
