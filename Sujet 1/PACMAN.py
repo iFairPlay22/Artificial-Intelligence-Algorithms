@@ -13,17 +13,37 @@ import math
 # 1 mur
 # 2 maison des fantomes (ils peuvent circuler mais pas pacman)
 
-TBL = [ [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-        [1,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,1],
-        [1,0,1,1,0,1,0,1,1,1,1,1,1,0,1,0,1,1,0,1],
-        [1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1],
-        [1,0,1,0,1,1,0,1,1,2,2,1,1,0,1,1,0,1,0,1],
-        [1,0,0,0,0,0,0,1,2,2,2,2,1,0,0,0,0,0,0,1],
-        [1,0,1,0,1,1,0,1,1,1,1,1,1,0,1,1,0,1,0,1],
-        [1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1],
-        [1,0,1,1,0,1,0,1,1,1,1,1,1,0,1,0,1,1,0,1],
-        [1,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,1],
-        [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1] ]
+# TBL = [ [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+#         [1,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,1],
+#         [1,0,1,1,0,1,0,1,1,1,1,1,1,0,1,0,1,1,0,1],
+#         [1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1],
+#         [1,0,1,0,1,1,0,1,1,2,2,1,1,0,1,1,0,1,0,1],
+#         [1,0,0,0,0,0,0,1,2,2,2,2,1,0,0,0,0,0,0,1],
+#         [1,0,1,0,1,1,0,1,1,1,1,1,1,0,1,1,0,1,0,1],
+#         [1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1],
+#         [1,0,1,1,0,1,0,1,1,1,1,1,1,0,1,0,1,1,0,1],
+#         [1,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,1],
+#         [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1] ]
+
+TBL = [ [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+        [1,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,1],
+        [1,0,1,1,0,1,0,1,1,1,1,1,1,0,1,0,1,1,0,1,1,0,1,0,1,1,1,1,1,1,0,1,0,1,1,0,1],
+        [1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1],
+        [1,0,1,0,1,1,0,1,1,2,2,1,1,0,1,1,0,1,0,1,0,1,1,0,1,1,2,2,1,1,0,1,1,0,1,0,1],
+        [1,0,0,0,0,0,0,1,2,2,2,2,1,0,0,0,0,0,0,0,0,0,0,0,1,2,2,2,2,1,0,0,0,0,0,0,1],
+        [1,0,1,0,1,1,0,1,1,1,1,1,1,0,1,1,0,1,0,1,0,1,1,0,1,1,1,1,1,1,0,1,1,0,1,0,1],
+        [1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1],
+        [1,0,1,1,0,1,0,1,1,1,1,1,1,0,1,0,1,1,0,1,1,0,1,0,1,1,1,1,1,1,0,1,0,1,1,0,1],
+        [1,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,1],
+        [1,0,1,1,0,1,0,1,1,1,1,1,1,0,1,0,1,1,0,1,1,0,1,0,1,1,1,1,1,1,0,1,0,1,1,0,1],
+        [1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1],
+        [1,0,1,0,1,1,0,1,1,2,2,1,1,0,1,1,0,1,0,1,0,1,1,0,1,1,2,2,1,1,0,1,1,0,1,0,1],
+        [1,0,0,0,0,0,0,1,2,2,2,2,1,0,0,0,0,0,0,0,0,0,0,0,1,2,2,2,2,1,0,0,0,0,0,0,1],
+        [1,0,1,0,1,1,0,1,1,1,1,1,1,0,1,1,0,1,0,1,0,1,1,0,1,1,1,1,1,1,0,1,1,0,1,0,1],
+        [1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1],
+        [1,0,1,1,0,1,0,1,1,1,1,1,1,0,1,0,1,1,0,1,1,0,1,0,1,1,1,1,1,1,0,1,0,1,1,0,1],
+        [1,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,1],
+        [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1] ]
         
 TBL = np.array(TBL,dtype=np.int32) # on transforme en tableau de int32 avec numpy
 TBL = TBL.transpose()  ## ainsi, on peut écrire TBL[x][y]
@@ -99,14 +119,17 @@ canvas.configure(background='black')
 
 def PlacementsGUM():  # placements des pacgums
    GUM = np.zeros(TBL.shape)
+   TOTAL_GUMS = 0
    
    for x in range(LARGEUR):
       for y in range(HAUTEUR):
          if ( TBL[x][y] == 0):
             GUM[x][y] = 1
-   return GUM
+            TOTAL_GUMS += 1
+
+   return (GUM, TOTAL_GUMS)
             
-GUM = PlacementsGUM()   
+GUM, TOTAL_GUMS = PlacementsGUM()   
 
 PacManPos = [5,5]
 
@@ -311,11 +334,11 @@ def GhostsPossibleMove(x,y):
 #    print()
 
 def IA():
-   global PacManPos, Ghosts, SCORE, LIFE, WIN, LOOSE
+   global PacManPos, Ghosts, SCORE, LIFE, WIN, LOOSE, TOTAL_GUMS
 
    # fin de jeu
    if (LIFE <= 0)    : LOOSE = True
-   if (100 <= SCORE) : WIN   = True
+   if (TOTAL_GUMS <= SCORE) : WIN   = True
    if (WIN or LOOSE) : return 
 
 
@@ -324,7 +347,7 @@ def IA():
    pacmanPhantomMoves = PacmanMovesTabForGhosts()
    pacmanPossibleMoveDirections = PacManPossibleMove()
    
-   #  { longueur_chemin_next_gum : direction_a_emprunter si 3 < longueur_chemin_next_ghost }
+   # { longueur_chemin_next_gum : direction_a_emprunter si 3 < longueur_chemin_next_ghost }
    pacmanBestMoveDirections = { 
       pacmanGumsMoves[PacManPos[0] + pacmanNextX][PacManPos[1] + pacmanNextY] 
          : 
@@ -334,12 +357,18 @@ def IA():
    }
 
    if (len(pacmanBestMoveDirections) != 0):
-      # on prends le meilleur choix pour aller vers le gum le plus proche, tout en evitant les fantomes les plus proches 
+      # on prend le meilleur choix pour aller vers le gum le plus proche, tout en evitant les fantomes les plus proches 
       pacmanMoveCoords = pacmanBestMoveDirections[min(pacmanBestMoveDirections.keys())]
    else:
-      # on doit s'eloigner du gum, pour survivre au fantomes qui sont trop proches
-      randomIndex = random.randrange(len(pacmanPossibleMoveDirections))
-      pacmanMoveCoords = pacmanPossibleMoveDirections[randomIndex]
+      # { longueur_chemin_next_ghost : direction_a_emprunter }
+      pacmanBestMoveDirections = { 
+         pacmanPhantomMoves[PacManPos[0] + pacmanNextX][PacManPos[1] + pacmanNextY] 
+            : 
+         (pacmanNextX, pacmanNextY) 
+         for pacmanNextX, pacmanNextY in pacmanPossibleMoveDirections 
+      }
+      # on prend le meilleur choix pour survivre au fantomes qui sont trop proches
+      pacmanMoveCoords = pacmanBestMoveDirections[max(pacmanBestMoveDirections.keys())]
    
    # on mets à jour les coordonnees du Pacman
    PacManPos[0] += pacmanMoveCoords[0]
@@ -376,11 +405,15 @@ def IA():
    # les fantomes attaquent Pacman 
    pacmanX, pacmanY = PacManPos
    for ghost in Ghosts:
-      # si un fantome est sur un intervalle d'une case pres de Pacman
-      for dx, dy in ((-1, 0), (1, 0), (0, -1), (0, 1)):
-         if (ghost[0] == pacmanX + dx and ghost[1] == pacmanY + dy):
-            # on baisse la vie de Pacman
-            LIFE = max(0, LIFE - 1)
+      if (ghost[0] == pacmanX and ghost[1] == pacmanY):
+         # on baisse la vie de Pacman
+         LIFE = max(0, LIFE - 1)
+
+      # # si un fantome est sur un intervalle d'une case pres de Pacman
+      # for dx, dy in ((-1, 0), (1, 0), (0, -1), (0, 1)):
+      #    if (ghost[0] == pacmanX + dx and ghost[1] == pacmanY + dy):
+      #       # on baisse la vie de Pacman
+      #       LIFE = max(0, LIFE - 1)
  
 
 #################################################################
