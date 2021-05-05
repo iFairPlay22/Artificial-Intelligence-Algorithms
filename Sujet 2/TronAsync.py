@@ -139,6 +139,7 @@ def GetAllExectuableMove(Game):
 
 def Simulate(Game):
 
+    nb = NbSimulation
     # on copie les datas de départ pour créer plusieurs parties
     G      = np.tile(Game.Grille,(nb,1,1))      # grille  (x,y) pour chaque partie
     X      = np.tile(Game.PlayerX,nb)           # playerX (x)   pour chaque partie
