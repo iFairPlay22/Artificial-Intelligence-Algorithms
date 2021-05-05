@@ -172,7 +172,7 @@ def MovePlayerWithIA(Game):
     for x,y in executableMove:
         Game.PlayerX = x  # valide le déplacement
         Game.PlayerY = y
-        total = MonteCarlo(Game,1000)
+        total = MonteCarlo(Game,10000)
         if(total>maxi):
             result = (x,y)
             maxi = total
@@ -208,7 +208,7 @@ def Partie():
         Affiche(CurrentGame)
         # rappelle la fonction Partie() dans 30ms
         # entre temps laisse l'OS réafficher l'interface
-        Window.after(1000,Partie) 
+        Window.after(100,Partie) 
     else :
         AfficheScore(CurrentGame)
 

@@ -98,12 +98,19 @@ def Simulate(Game):
 
 
         # Direction : 2 = vers le haut
-        Choix = np.ones(nb,dtype=np.uint8) * 2
+        R = np.random.randint(4,size=nb)
 
 
         #DEPLACEMENT
-        DX = dx[Choix]
-        DY = dy[Choix]
+        LPossibles = np.zeros((nb,4),dtype=np.int32)
+        LPossibles = np.insert(LPossibles, 5, axis=1)
+        Indices = np.zeros(nb,dtype=np.int32)
+        
+        print(LPossibles)
+        Indices = LPossibles[I]
+        Indices[Indices == 0]=1
+        DX = dx[R]
+        DY = dy[R]
         if Debug : print("DX : ", DX)
         if Debug : print("DY : ", DY)
         X += DX
