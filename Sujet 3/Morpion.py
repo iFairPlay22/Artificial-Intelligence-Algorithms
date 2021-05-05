@@ -94,9 +94,9 @@ def Play(x,y):
     global DebutDePartie, Grille, vainqueur
 
     if DebutDePartie or vainqueur != 0:
-        Grille = [ [0,0,0], 
-                   [0,0,0], 
-                   [0,0,0] ]  # attention les lignes représentent les colonnes de la grille
+        for i in range(len(Grille)):
+            for j in range(len(Grille[i])):
+                Grille[i][j] = 0
         vainqueur = 0
         DebutDePartie = False
         Dessine()
