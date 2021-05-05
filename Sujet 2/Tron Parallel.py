@@ -99,20 +99,24 @@ def Simulate(Game):
         R = np.random.randint(4,size=nb)
 
         #DEPLACEMENT
-        LPossibles = np.zeros((nb,4),dtype=np.int32)
+        LPossibles = np.zeros((nb),dtype=np.int32)
         LPossibles[I,0] = G[I, X+dx[1], Y+dy[1]] == 0
-        LPossibles[I,1] = np.where(G[I, X+dx[2], Y+dy[2]],2,0)
-        LPossibles[I,2] = np.where(G[I, X+dx[3], Y+dy[3]],3,0)        
-        LPossibles[I,3] = np.where(G[I, X+dx[4], Y+dy[4]],4,0)
-        print(LPossibles)
+        LPossibles[I,1] = np.where(G[I, X+dx[2], Y+dy[2]]==0,2,0)
+        LPossibles[I,2] = np.where(G[I, X+dx[3], Y+dy[3]]==0,3,0)        
+        LPossibles[I,3] = np.where(G[I, X+dx[4], Y+dy[4]]==0,4,0)
 
         Indices = np.zeros(nb,dtype=np.int32)
-        Indices = np.count_nonzero(LPossibles[I] != 0 , axis=1)
+        Indices = np.count_nonzero(LPossibles!= 0 , axis=1)
+      
         Indices[Indices == 0]=1
-
-
-        DX = dx[R]
-        DY = dy[R]
+        Position = LPossibles[I,R%Indices[I]]
+        S[I] += Position[I]!=0
+        nb0 =  np.count_nonzero(Position == 0 )
+        print(nb0)
+        if(nb0==nb):
+            boucle = False
+        DX = dx[Position]
+        DY = dy[Position]
         if Debug : print("DX : ", DX)
         if Debug : print("DY : ", DY)
         X += DX
@@ -122,7 +126,7 @@ def Simulate(Game):
         #debug
         if Debug : AffGrilles(G,X,Y)
         if Debug : time.sleep(2)
-
+    print(S)
     print("Scores : ",np.mean(S))
 
 
