@@ -128,7 +128,7 @@ def Simulate(Game):
         Indices[Indices == 0] = 1
         Position = LPossibles[I,R%Indices[I]]
         if Debug :print("Position : ",Position)
-        S[I] += Position[I]!=0
+        S[I] += ds[Position]
         nb0 =  np.count_nonzero(Position == 0 )
         if(nb0==nb):
             boucle = False
