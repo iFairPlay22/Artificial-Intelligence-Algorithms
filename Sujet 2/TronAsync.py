@@ -7,7 +7,7 @@ import time
 #################################################################################
 #
 #   Données de partie
-NbSimulation = 10000
+NbSimulation = 20000
 Data = [   [1,1,1,1,1,1,1,1,1,1,1,1,1],
            [1,0,0,0,0,0,0,0,0,0,0,0,1],
            [1,0,0,0,0,0,0,0,0,0,0,0,1],
@@ -121,46 +121,87 @@ def AfficheScore(Game):
 # gestion du joueur IA
 
 # VOTRE CODE ICI 
+dx = np.array([0, -1, 0,  1,  0],dtype=np.int8)
+dy = np.array([0,  0, 1,  0, -1],dtype=np.int8)
+
+# scores associés à chaque déplacement
+ds = np.array([0,  1,  1,  1,  1],dtype=np.int8)
 def GetAllExectuableMove(Game):
     possibleMove = [(0,+1),(0,-1),(+1,0),(-1,0)]
     executableMove = []
     for tup in possibleMove :
-        x,y = Game.PlayerX + tup[0],Game.PlayerY + tup[1]
+        x,y = Game.PlayerX + tup[0], Game.PlayerY + tup[1]
         v = Game.Grille[x,y]
         if v == 0 :
             executableMove.append((x,y))
     
     return executableMove
 
-def MovePlayer(Game): 
-    executableMove = GetAllExectuableMove(Game)
-    if(len(executableMove)<1):
-        return None, None
-    return random.choice(executableMove)
+def Simulate(Game):
 
-def SimulateGame(Game):
-   
-    while True :
-        x,y = Game.PlayerX, Game.PlayerY
+    nb = NbSimulation
+    # on copie les datas de départ pour créer plusieurs parties
+    G      = np.tile(Game.Grille,(nb,1,1))      # grille  (x,y) pour chaque partie
+    X      = np.tile(Game.PlayerX,nb)           # playerX (x)   pour chaque partie
+    Y      = np.tile(Game.PlayerY,nb)           # playerY (y)   pour chaque partie
+    S      = np.tile(Game.Score,nb)             # score   (s)   pour chaque partie
+    I      = np.arange(nb)                      # 0,1,2,3,...,nb-1
 
-        Game.Grille[x,y] = 2  # laisse la trace de la moto
+    # VOTRE CODE ICI
+    continuer = True
 
-        x,y = MovePlayer(Game)
-        if x == None or y == None :
-            break
-        else :
-            Game.PlayerX = x  # valide le déplacement
-            Game.PlayerY = y  # valide le déplacement
-            Game.Score += 1
+    while(continuer) :
 
-    return Game.Score
+        # pour chaque partie, on fait une affectation à 2 le passage de la moto
+        G[I, X, Y] = 2
+
+
+        ### pour chaque partie, on gère tous les index de déplacements possibles
+        # pour chaque partie, on associe une liste de taille 4 initialisée à 0 
+        LPossibles = np.zeros((nb, 4),dtype=np.int8)
+
+        # pour chaque partie, on associe la liste de taille 4 à i si le joueur peut bouger dans cette direction, 0 sinon
+        for i in range(4): 
+            LPossibles[I,i] = np.where(G[I, X+dx[i+1], Y+dy[i+1]] == 0,i+1,0)
+
+        # pour chaque partie, on trie la liste des directions de manière décroissante
+        LPossibles.sort(axis=1)
+        LPossibles = np.fliplr(LPossibles)
+
+
+        ### pour chaque partie, on compte le nombre de déplacements possibles
+        # pour chaque partie, on compte le nombre d'éléments de LPossibles non nuls
+        Indices = np.count_nonzero(LPossibles, axis=1)
+        
+        # pour chaque partie, on remplace les index de 0 par 1 pour pas planter sur le modulo
+        Indices[Indices == 0] = 1
+
+        # pour chaque partie, on génère un index de direction aléatoire
+        R = np.random.randint(12,size=nb,dtype=np.int8)
+
+        # pour chaque partie, on réucupère un vecteur position
+        Position = LPossibles[I, R % Indices[I]]
+        
+
+        ### on gère les déplacement et le code
+
+        # on arrete le traitement si, on est statique sur l'ensemble des parties
+        if(nb == np.count_nonzero(Position == 0)): continuer = False
+
+        # pour chaque partie, on incrémente le score
+        S[I] += ds[Position]
+
+        # pour chaque partie, on déplace le joueur
+        X += dx[Position]
+        Y += dy[Position]
+
+    # on retourne la moyenne des scores
+    return np.mean(S)
+
+
      
 def MonteCarlo(Game):
-    Total = 0
-    for i in range(NbSimulation):
-        Game2 = Game.copy()
-        Total += SimulateGame(Game2)
-    return Total
+    return Simulate(Game)
 
 def MovePlayerWithIA(Game):
     executableMove = GetAllExectuableMove(Game)
