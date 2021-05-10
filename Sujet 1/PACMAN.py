@@ -179,7 +179,7 @@ def Affiche():
    for x in range(LARGEUR):
       for y in range(HAUTEUR):
          xx = To(x) 
-         yy = To(y)
+         yy = To(y) + 10
 
          m1 = "∞" if moves1[x][y] == math.inf else str(int(moves1[x][y]))
          m2 = "∞" if moves2[x][y] == math.inf else str(int(moves2[x][y]))
@@ -445,7 +445,7 @@ def IA():
       ghostX, ghostY = ghost[0], ghost[1]
 
       # si il y a une collision
-      if ((ghostX - pacmanX, ghostY - pacmanY) in [ (0,1), (0,-1), (1,0), (-1,0) ]):
+      if ((ghostX - pacmanX, ghostY - pacmanY) in [ (0,0), (0,1), (0,-1), (1,0), (-1,0) ]):
 
          if (0 < NB_CASES_INVINCIBLE):
             # Pacman est invincible, il mange donc les fantomes
