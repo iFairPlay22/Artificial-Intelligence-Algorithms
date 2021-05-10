@@ -13,48 +13,53 @@ import math
 # 1 mur
 # 2 maison des fantomes (ils peuvent circuler mais pas pacman)
 
-# TBL = [ [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-#         [1,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,1],
-#         [1,0,1,1,0,1,0,1,1,1,1,1,1,0,1,0,1,1,0,1],
-#         [1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1],
-#         [1,0,1,0,1,1,0,1,1,2,2,1,1,0,1,1,0,1,0,1],
-#         [1,0,0,0,0,0,0,1,2,2,2,2,1,0,0,0,0,0,0,1],
-#         [1,0,1,0,1,1,0,1,1,1,1,1,1,0,1,1,0,1,0,1],
-#         [1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1],
-#         [1,0,1,1,0,1,0,1,1,1,1,1,1,0,1,0,1,1,0,1],
-#         [1,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,1],
-#         [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1] ]
+TBL = [ [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+        [1,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,1],
+        [1,0,1,1,0,1,0,1,1,1,1,1,1,0,1,0,1,1,0,1],
+        [1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1],
+        [1,0,1,0,1,1,0,1,1,2,2,1,1,0,1,1,0,1,0,1],
+        [1,0,0,0,0,0,0,1,2,2,2,2,1,0,0,0,0,0,0,1],
+        [1,0,1,0,1,1,0,1,1,1,1,1,1,0,1,1,0,1,0,1],
+        [1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1],
+        [1,0,1,1,0,1,0,1,1,1,1,1,1,0,1,0,1,1,0,1],
+        [1,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,1],
+        [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1] ]
 
-TBL = [ [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-        [1,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,1],
-        [1,0,1,1,0,1,0,1,1,1,1,1,1,0,1,0,1,1,0,1,1,0,1,0,1,1,1,1,1,1,0,1,0,1,1,0,1],
-        [1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1],
-        [1,0,1,0,1,1,0,1,1,2,2,1,1,0,1,1,0,1,0,1,0,1,1,0,1,1,2,2,1,1,0,1,1,0,1,0,1],
-        [1,0,0,0,0,0,0,1,2,2,2,2,1,0,0,0,0,0,0,0,0,0,0,0,1,2,2,2,2,1,0,0,0,0,0,0,1],
-        [1,0,1,0,1,1,0,1,1,1,1,1,1,0,1,1,0,1,0,1,0,1,1,0,1,1,1,1,1,1,0,1,1,0,1,0,1],
-        [1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1],
-        [1,0,1,1,0,1,0,1,1,1,1,1,1,0,1,0,1,1,0,1,1,0,1,0,1,1,1,1,1,1,0,1,0,1,1,0,1],
-        [1,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,1],
-        [1,0,1,1,0,1,0,1,1,1,1,1,1,0,1,0,1,1,0,1,1,0,1,0,1,1,1,1,1,1,0,1,0,1,1,0,1],
-        [1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1],
-        [1,0,1,0,1,1,0,1,1,2,2,1,1,0,1,1,0,1,0,1,0,1,1,0,1,1,2,2,1,1,0,1,1,0,1,0,1],
-        [1,0,0,0,0,0,0,1,2,2,2,2,1,0,0,0,0,0,0,0,0,0,0,0,1,2,2,2,2,1,0,0,0,0,0,0,1],
-        [1,0,1,0,1,1,0,1,1,1,1,1,1,0,1,1,0,1,0,1,0,1,1,0,1,1,1,1,1,1,0,1,1,0,1,0,1],
-        [1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1],
-        [1,0,1,1,0,1,0,1,1,1,1,1,1,0,1,0,1,1,0,1,1,0,1,0,1,1,1,1,1,1,0,1,0,1,1,0,1],
-        [1,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,1],
-        [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1] ]
+# TBL = [ [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+#         [1,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,1],
+#         [1,0,1,1,0,1,0,1,1,1,1,1,1,0,1,0,1,1,0,1,1,0,1,0,1,1,1,1,1,1,0,1,0,1,1,0,1],
+#         [1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1],
+#         [1,0,1,0,1,1,0,1,1,2,2,1,1,0,1,1,0,1,0,1,0,1,1,0,1,1,2,2,1,1,0,1,1,0,1,0,1],
+#         [1,0,0,0,0,0,0,1,2,2,2,2,1,0,0,0,0,0,0,0,0,0,0,0,1,2,2,2,2,1,0,0,0,0,0,0,1],
+#         [1,0,1,0,1,1,0,1,1,1,1,1,1,0,1,1,0,1,0,1,0,1,1,0,1,1,1,1,1,1,0,1,1,0,1,0,1],
+#         [1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1],
+#         [1,0,1,1,0,1,0,1,1,1,1,1,1,0,1,0,1,1,0,1,1,0,1,0,1,1,1,1,1,1,0,1,0,1,1,0,1],
+#         [1,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,1],
+#         [1,0,1,1,0,1,0,1,1,1,1,1,1,0,1,0,1,1,0,1,1,0,1,0,1,1,1,1,1,1,0,1,0,1,1,0,1],
+#         [1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1],
+#         [1,0,1,0,1,1,0,1,1,2,2,1,1,0,1,1,0,1,0,1,0,1,1,0,1,1,2,2,1,1,0,1,1,0,1,0,1],
+#         [1,0,0,0,0,0,0,1,2,2,2,2,1,0,0,0,0,0,0,0,0,0,0,0,1,2,2,2,2,1,0,0,0,0,0,0,1],
+#         [1,0,1,0,1,1,0,1,1,1,1,1,1,0,1,1,0,1,0,1,0,1,1,0,1,1,1,1,1,1,0,1,1,0,1,0,1],
+#         [1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1],
+#         [1,0,1,1,0,1,0,1,1,1,1,1,1,0,1,0,1,1,0,1,1,0,1,0,1,1,1,1,1,1,0,1,0,1,1,0,1],
+#         [1,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,1],
+#         [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1] ]
         
-TBL = np.array(TBL,dtype=np.int32) # on transforme en tableau de int32 avec numpy
-TBL = TBL.transpose()  ## ainsi, on peut écrire TBL[x][y]
+TBL = np.array(TBL,dtype=np.int8) # on transforme en tableau de int8 avec numpy
+TBL = TBL.transpose()              ## ainsi, on peut écrire TBL[x][y]
 
 WIN   = False # Pacman a gagné
 LOOSE = False # Pacman a perdu
+
 LIFE  = 3     # nombre de vie de Pacman
 SCORE = 0     # nombre de points de Pacman
-        
+
+NB_CASES_INVINCIBLE = 0      # Le Pacman attaque les ghosts si 0 < NB_CASES_INVINCIBLE
+MAX_NB_CASES_INVINCIBLE = 15 # NB_CASES_INVINCIBLE = MAX_NB_CASES_INVINCIBLE quand Pacman mange une super pacgom
+
 ZOOM   = 40 # taille d'une case en pixels
 EPAISS = 8  # epaisseur des murs bleus en pixels
+
 HAUTEUR = TBL.shape [1] # hauteur du tableau TBL
 LARGEUR = TBL.shape [0] # largeur du tableau TBL
 
@@ -97,7 +102,7 @@ def AfficherPage(id):
     
 def WindowAnim():
     MainLoop()
-    Window.after(200,WindowAnim)
+    Window.after(500,WindowAnim)
 
 Window.after(100,WindowAnim)
 
@@ -127,6 +132,10 @@ def PlacementsGUM():  # placements des pacgums
             GUM[x][y] = 1
             TOTAL_GUMS += 1
 
+   for x, y in [ (1,1) , (LARGEUR-2,1), (1,HAUTEUR-2), (LARGEUR-2,HAUTEUR-2) ]:
+      if ( GUM[x][y] == 1 ):
+         GUM[x][y] = 2
+
    return (GUM, TOTAL_GUMS)
             
 GUM, TOTAL_GUMS = PlacementsGUM()   
@@ -138,14 +147,6 @@ Ghosts.append(  [LARGEUR//2, HAUTEUR // 2 ,  "pink"  , (0, -1) ]  )
 Ghosts.append(  [LARGEUR//2, HAUTEUR // 2 ,  "orange", (0, -1) ]  )
 Ghosts.append(  [LARGEUR//2, HAUTEUR // 2 ,  "cyan"  , (0, -1) ]  )
 Ghosts.append(  [LARGEUR//2, HAUTEUR // 2 ,  "red"   , (0, -1) ]  )     
-Ghosts.append(  [LARGEUR//2, HAUTEUR // 2 ,  "pink"  , (0, -1) ]  )
-Ghosts.append(  [LARGEUR//2, HAUTEUR // 2 ,  "orange", (0, -1) ]  )
-Ghosts.append(  [LARGEUR//2, HAUTEUR // 2 ,  "cyan"  , (0, -1) ]  )
-Ghosts.append(  [LARGEUR//2, HAUTEUR // 2 ,  "red"   , (0, -1) ]  )   
-Ghosts.append(  [LARGEUR//2, HAUTEUR // 2 ,  "pink"  , (0, -1) ]  )
-Ghosts.append(  [LARGEUR//2, HAUTEUR // 2 ,  "orange", (0, -1) ]  )
-Ghosts.append(  [LARGEUR//2, HAUTEUR // 2 ,  "cyan"  , (0, -1) ]  )
-Ghosts.append(  [LARGEUR//2, HAUTEUR // 2 ,  "red"   , (0, -1) ]  )   
 
  
 #################################################################
@@ -173,12 +174,17 @@ def Affiche():
 
 
    # chiffres
-   # moves = PacmanMovesTabForGhosts() # PacmanMovesTabForGums()
-   # for x in range(LARGEUR):
-   #    for y in range(HAUTEUR):
-   #       xx = To(x) 
-   #       yy = To(y)
-   #       canvas.create_text(xx,yy, text = moves[x][y], fill ="white", font=("Purisa", 8))
+   moves1 = PacmanMovesTabForGums()
+   moves2 = PacmanMovesTabForGhosts() 
+   for x in range(LARGEUR):
+      for y in range(HAUTEUR):
+         xx = To(x) 
+         yy = To(y)
+
+         m1 = "∞" if moves1[x][y] == math.inf else str(int(moves1[x][y]))
+         m2 = "∞" if moves2[x][y] == math.inf else str(int(moves2[x][y]))
+         txt = m1 + " " + m2
+         canvas.create_text(xx,yy, text = txt, fill ="white", font=("Purisa", 8))
       
       
    # murs
@@ -201,10 +207,10 @@ def Affiche():
    # pacgum
    for x in range(LARGEUR):
       for y in range(HAUTEUR):
-         if ( GUM[x][y] == 1):
+         if (GUM[x][y] in [1,2]):
             xx = To(x) 
             yy = To(y)
-            e = 5
+            e = 5 if GUM[x][y] == 1 else 10
             canvas.create_oval(xx-e,yy-e,xx+e,yy+e,fill="orange")
   
    # dessine pacman
@@ -241,7 +247,8 @@ def Affiche():
       dec += 3
      
    # scores et vie de Pacman
-   canvas.create_text(screeenWidth // 2, screenHeight- 50 , text = "Score : " + str(SCORE) + ", Life : " + str(LIFE), fill ="yellow", font = PoliceTexte)
+   color = "red" if 0 < NB_CASES_INVINCIBLE else "yellow"
+   canvas.create_text(screeenWidth // 2, screenHeight- 50 , text = "Score : " + str(SCORE) + ", Life : " + str(LIFE), fill = color, font = PoliceTexte)
 
    # message de victoire ou defaite
    if (WIN or LOOSE):
@@ -251,6 +258,7 @@ def Affiche():
 #################################################################
 ##
 ##  IA RANDOM
+
 
 # renvoie un tableau des distances
 def MovesTab(getVal):
@@ -299,9 +307,9 @@ def MovesTab(getVal):
 # renvoie le tableau des distances pour les gums
 def PacmanMovesTabForGums():
    def getVal(x, y): 
-      if (GUM[x][y] == 1)   : return 0
-      elif (TBL[x][y] == 0) : return 100
-      else                  : return math.inf
+      if (GUM[x][y] in [1,2])   : return 0
+      elif (TBL[x][y] == 0)     : return 100
+      else                      : return math.inf
 
    return MovesTab(getVal)
 
@@ -334,40 +342,24 @@ def GhostsPossibleMove(x,y):
    if ( TBL[x+1][y  ] in [0, 2] ): L.append(( 1, 0))
    if ( TBL[x-1][y  ] in [0, 2] ): L.append((-1, 0))
    return L
-   
-# def debug(tab):
-#    x, y = PacManPos
-#    print(np.array(tab).transpose())
-#    print(str(x) + " " + str(y))
-#    print()
 
 def IA():
-   global PacManPos, Ghosts, SCORE, LIFE, WIN, LOOSE, TOTAL_GUMS
+   global PacManPos, Ghosts, SCORE, LIFE, WIN, LOOSE, TOTAL_GUMS, NB_CASES_INVINCIBLE, MAX_NB_CASES_INVINCIBLE
 
    # fin de jeu
-   if (LIFE <= 0)    : LOOSE = True
-   if (TOTAL_GUMS <= SCORE) : WIN   = True
-   if (WIN or LOOSE) : return 
+   if (LIFE <= 0)       : LOOSE = True
+   if (TOTAL_GUMS == 0) : WIN   = True
+   if (WIN or LOOSE)    : return 
 
 
    # deplacement Pacman
-   pacmanGumsMoves = PacmanMovesTabForGums()
-   pacmanPhantomMoves = PacmanMovesTabForGhosts()
+   pacmanGumsMoves              = PacmanMovesTabForGums()
+   pacmanPhantomMoves           = PacmanMovesTabForGhosts()
    pacmanPossibleMoveDirections = PacManPossibleMove()
-   
-   # { longueur_chemin_next_gum : direction_a_emprunter si 3 < longueur_chemin_next_ghost }
-   pacmanBestMoveDirections = { 
-      pacmanGumsMoves[PacManPos[0] + pacmanNextX][PacManPos[1] + pacmanNextY] 
-         : 
-      (pacmanNextX, pacmanNextY) 
-      for pacmanNextX, pacmanNextY in pacmanPossibleMoveDirections 
-      if 3 < pacmanPhantomMoves[PacManPos[0] + pacmanNextX][PacManPos[1] + pacmanNextY]
-   }
 
-   if (len(pacmanBestMoveDirections) != 0):
-      # on prend le meilleur choix pour aller vers le gum le plus proche, tout en evitant les fantomes les plus proches 
-      pacmanMoveCoords = pacmanBestMoveDirections[min(pacmanBestMoveDirections.keys())]
-   else:
+   if 0 < NB_CASES_INVINCIBLE:
+      # Pacman est invincible : sa priorité est de manger les fantomes (1)
+      
       # { longueur_chemin_next_ghost : direction_a_emprunter }
       pacmanBestMoveDirections = { 
          pacmanPhantomMoves[PacManPos[0] + pacmanNextX][PacManPos[1] + pacmanNextY] 
@@ -375,8 +367,37 @@ def IA():
          (pacmanNextX, pacmanNextY) 
          for pacmanNextX, pacmanNextY in pacmanPossibleMoveDirections 
       }
-      # on prend le meilleur choix pour survivre au fantomes qui sont trop proches
-      pacmanMoveCoords = pacmanBestMoveDirections[max(pacmanBestMoveDirections.keys())]
+
+      # on prend le meilleur choix pour se diriger vers le fantome le plus proche (1)
+      pacmanMoveCoords = pacmanBestMoveDirections[min(pacmanBestMoveDirections.keys())]
+
+      NB_CASES_INVINCIBLE -= 1
+
+   else:
+      # Pacman n'est plus invincible : sa priorité est de manger les pacgoms (2) et de survivre (3)
+
+      # { longueur_chemin_next_gum : direction_a_emprunter si 3 < longueur_chemin_next_ghost }
+      pacmanBestMoveDirections = { 
+         pacmanGumsMoves[PacManPos[0] + pacmanNextX][PacManPos[1] + pacmanNextY] 
+            : 
+         (pacmanNextX, pacmanNextY) 
+         for pacmanNextX, pacmanNextY in pacmanPossibleMoveDirections 
+         if 3 < pacmanPhantomMoves[PacManPos[0] + pacmanNextX][PacManPos[1] + pacmanNextY]
+      }
+
+      if (len(pacmanBestMoveDirections) != 0):
+         # on prend le meilleur choix pour aller vers le gum le plus proche, tout en evitant les fantomes les plus proches (2)
+         pacmanMoveCoords = pacmanBestMoveDirections[min(pacmanBestMoveDirections.keys())]
+      else:
+         # { longueur_chemin_next_ghost : direction_a_emprunter }
+         pacmanBestMoveDirections = { 
+            pacmanPhantomMoves[PacManPos[0] + pacmanNextX][PacManPos[1] + pacmanNextY] 
+               : 
+            (pacmanNextX, pacmanNextY) 
+            for pacmanNextX, pacmanNextY in pacmanPossibleMoveDirections 
+         }
+         # on prend le meilleur choix pour survivre au fantomes qui sont trop proches (3)
+         pacmanMoveCoords = pacmanBestMoveDirections[max(pacmanBestMoveDirections.keys())]
    
    # on mets à jour les coordonnees du Pacman
    PacManPos[0] += pacmanMoveCoords[0]
@@ -408,7 +429,15 @@ def IA():
    x, y = PacManPos
    if (GUM[x][y] == 1):
       GUM[x][y] = 0
-      SCORE += 1
+      SCORE += 10
+      TOTAL_GUMS -= 1
+
+   # Pacman recupere le supergum
+   if (GUM[x][y] == 2): 
+      GUM[x][y] = 0
+      SCORE += 50
+      NB_CASES_INVINCIBLE = MAX_NB_CASES_INVINCIBLE
+      TOTAL_GUMS -= 1
 
    # les fantomes attaquent Pacman 
    pacmanX, pacmanY = PacManPos
@@ -416,10 +445,16 @@ def IA():
       ghostX, ghostY = ghost[0], ghost[1]
 
       # si il y a une collision
-      if ((ghostX - pacmanX, ghostY - pacmanY) in [(0,1), (0,-1), (1,0), (-1,0)]):
+      if ((ghostX - pacmanX, ghostY - pacmanY) in [ (0,1), (0,-1), (1,0), (-1,0) ]):
 
-         # on baisse la vie de Pacman
-         LIFE = max(0, LIFE - 1)
+         if (0 < NB_CASES_INVINCIBLE):
+            # Pacman est invincible, il mange donc les fantomes
+            ghost[0] = LARGEUR // 2
+            ghost[1] = HAUTEUR // 2
+            SCORE += 100
+         else:
+            # on baisse la vie de Pacman
+            LIFE = max(0, LIFE - 1)
 
 #################################################################
 ##
