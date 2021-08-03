@@ -7,7 +7,7 @@ import time
 #################################################################################
 #
 #   Données de partie
-NbSimulation = 20000
+NbSimulation = 10000
 Data = [   [1,1,1,1,1,1,1,1,1,1,1,1,1],
            [1,0,0,0,0,0,0,0,0,0,0,0,1],
            [1,0,0,0,0,0,0,0,0,0,0,0,1],
@@ -23,7 +23,7 @@ Data = [   [1,1,1,1,1,1,1,1,1,1,1,1,1],
            [1,0,0,0,0,0,0,0,0,0,0,0,1],
            [1,0,0,0,0,0,0,0,0,0,0,0,1],
            [1,0,0,0,0,0,0,0,0,0,0,0,1],
-           [1,1,0,0,0,0,0,0,0,0,0,0,1],
+           [1,0,0,0,0,0,0,0,0,0,0,0,1],
            [1,1,1,1,1,1,1,1,1,1,1,1,1] ]
 
 GInit  = np.array(Data,dtype=np.int8)
@@ -249,7 +249,7 @@ def Partie():
         Affiche(CurrentGame)
         # rappelle la fonction Partie() dans 30ms
         # entre temps laisse l'OS réafficher l'interface
-        Window.after(1000,Partie) 
+        Window.after(1,Partie) 
     else :
         AfficheScore(CurrentGame)
 

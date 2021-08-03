@@ -2,7 +2,7 @@ import tkinter as tk
 import random
 import numpy as np
 import copy 
-
+import time
 # voici les 4 touches utilisées pour les déplacements  gauche/haut/droite/bas
 
 Keys =  ['q','z','d','s']
@@ -50,7 +50,7 @@ HAUTEUR = 17
 L = 20  # largeur d'une case du jeu en pixel    
 largeurPix = LARGEUR * L
 hauteurPix = (HAUTEUR+1) * L
-
+DEBUG =False
 
 Window = tk.Tk()
 Window.geometry(str(largeurPix)+"x"+str(hauteurPix+3))   # taille de la fenetre
@@ -146,6 +146,8 @@ class Game:
         
         
     def Doo(self,action):
+        global DEBUG
+        if DEBUG : print('Start')
         #  annulation des déplacements vers un mur
         if self.PlayerPos[0] == 0          and action == 0:  return 0
         if self.PlayerPos[0] == LARGEUR-1  and action == 2:  return 0
@@ -153,7 +155,7 @@ class Game:
         if self.PlayerPos[1] == 0          and action == 3:  return 0
         if self.PlayerPos[1] == HAUTEUR-1  and action == 1:  return 0
         
-        
+        if DEBUG :print('AfterWall')
         # 0 ; left, 2: up, 4: right, 6: down
         P = [ 0 ] * 8 
         v = 100
@@ -204,6 +206,10 @@ class Game:
         reward = self.Doo(action)
         self.Score += reward
         return reward
+    
+    def GetNbCase(self):
+        return (HAUTEUR-1-self.PlayerPos[1])*(LARGEUR)+self.PlayerPos[0]
+
         
 
 ###########################################################
@@ -236,15 +242,114 @@ def JeuClavier():
 #  simulateur de partie aléatoire
 #
 ###########################################################
- 
-def SimulGame():   # il n y a pas de notion de "fin de partie"
+def Test(Q_table):
+    global DEBUG
+    DEBUG=True
     G = Game()
-    reward = 0
-    for i in range(100):
-       action = random.randrange(0,4)
-       reward += G.Do(action)
-    return reward
-     
+    reward=0;
+    for t in range(100):
+        s=G.GetNbCase()
+        action = random.randrange(0,4)
+        a = np.argmax(Q_table[s,:])
+        reward += G.Do(a)
+        
+        
+    return reward # over limitpy
+    
+def SimulGame():   # il n y a pas de notion de "fin de partie"
+    Q_table = np.zeros((LARGEUR*HAUTEUR,len(Keys)))
+    lr = .85
+    y = .99
+    liste=[]
+    for i in range(1000): 
+            
+        G = Game()
+        
+        s=G.GetNbCase()
+        for i in range(100):
+            
+            cumul_reward = 0
+            a = random.randrange(0,4)
+            reward = G.Do(a)
+            s1=G.GetNbCase()
+            Q_table[s, a] = Q_table[s, a] + lr*(reward + y * np.max(Q_table[s1,:]) - Q_table[s, a]) # Fonction de mise à jour de la Q-table
+            s=s1
+            cumul_reward += reward
+            
+        liste.append(cumul_reward)
+       
+    return str(sum(liste)/len(liste)), Q_table
+
+# Q learning params
+ALPHA = 0.1 # learning rate
+GAMMA = 0.99 # reward discount
+LEARNING_COUNT = 1000
+TEST_COUNT = 1000
+
+TURN_LIMIT = 100
+IS_MONITOR = True
+
+class Agent:
+    def __init__(self, env):
+        self.env = env
+        self.episode_reward = 0.0
+        self.q_val = np.zeros(LARGEUR*HAUTEUR * len(Keys)).reshape(LARGEUR*HAUTEUR , len(Keys)).astype(np.float32)
+
+    def learn(self):
+        # one episode learning
+        self.env=Game()
+        state = self.env.GetNbCase()
+        
+        #self.env.render()
+        liste=[]
+        for t in range(TURN_LIMIT):
+            act = random.randrange(0,4) # random
+            reward = self.env.Do(act)
+            next_state =self.env.GetNbCase()
+            q_next_max = np.max(self.q_val[next_state])
+            # Q <- Q + a(Q' - Q)
+            # <=> Q <- (1-a)Q + a(Q')
+            self.q_val[state][act] = (1 - ALPHA) * self.q_val[state][act]\
+                                 + ALPHA * (reward + GAMMA * q_next_max)
+            
+            #self.env.render()
+            state = next_state
+        return self.env.Score # over limit
+
+    def test(self):
+        self.env=Game()
+        state = self.env.GetNbCase()
+        for t in range(TURN_LIMIT):
+            act = np.argmax(self.q_val[state])
+            print(act)
+            reward = self.env.Do(act)
+            next_state =self.env.GetNbCase()
+            state = next_state
+        return self.env.Score # over limit
+
+def main():
+    env = Game()
+    agent = Agent(env)
+
+    print("###### LEARNING #####")
+    reward_total = 0.0
+    for i in range(LEARNING_COUNT):
+        reward_total += agent.learn()
+    print("episodes      : {}".format(LEARNING_COUNT))
+    print("total reward  : {}".format(reward_total))
+    print("average reward: {:.2f}".format(reward_total / LEARNING_COUNT))
+    print("Q Value       :{}".format(agent.q_val))
+
+    print("###### TEST #####")
+    reward_total = 0.0
+    for i in range(TEST_COUNT):
+        reward_total += agent.test()
+    print("episodes      : {}".format(TEST_COUNT))
+    print("total reward  : {}".format(reward_total))
+    print("average reward: {:.2f}".format(reward_total / TEST_COUNT))
+
+
+
 
 #####################################################################################
 #
@@ -252,7 +357,7 @@ def SimulGame():   # il n y a pas de notion de "fin de partie"
 
  
 AfficherPage(0)
-Window.after(500,JeuClavier)
+Window.after(500,main)
 Window.mainloop()
       
 
